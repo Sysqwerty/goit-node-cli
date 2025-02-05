@@ -8,7 +8,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "node index.js"
+    "start": "node src/index.js -a list"
   },
   "type": "module",
   "author": "",

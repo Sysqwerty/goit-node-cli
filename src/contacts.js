@@ -1,15 +1,20 @@
-import path from "path";
-import fs from "fs/promises";
+import path from "node:path";
+import fs from "node:fs/promises";
 import { nanoid } from "nanoid";
 
-const contactsPath = path.join("db", "contacts.json");
+const contactsPath = path.resolve("src", "db", "contacts.json");
 
 /**
  * Gets all contacts from followed by path file
  * @returns {Promise<object[]>}
  */
 async function listContacts() {
-  return JSON.parse(await fs.readFile(contactsPath, "utf-8"));
+  try {
+    return JSON.parse(await fs.readFile(contactsPath, "utf-8"));
+  } catch (error) {
+    console.log("Error reading contacts file: ", error.message);
+    return [];
+  }
 }
 
 /**
@@ -38,7 +43,12 @@ async function removeContact(contactId) {
   }
 
   const [removedContact] = allContacts.splice(contactIndex, 1); // Видаляємо контакт за його індексом
-  await fs.writeFile(contactsPath, JSON.stringify(allContacts, null, 2)); // Перезаписуємо файл
+
+  try {
+    await fs.writeFile(contactsPath, JSON.stringify(allContacts, null, 2));
+  } catch (error) {
+    console.log("Error writing contacts file: ", error.message);
+  }
 
   return removedContact;
 }
@@ -54,7 +64,13 @@ async function addContact(name, email, phone) {
   const allContacts = await listContacts(); // Отримуємо всі контакти
   const newContact = { id: nanoid(), name, email, phone }; // Створюємо новий контакт
   allContacts.push(newContact); // Додаємо новий контакт до масиву контактів
-  await fs.writeFile(contactsPath, JSON.stringify(allContacts, null, 2)); // Перезаписуємо файл
+
+  try {
+    await fs.writeFile(contactsPath, JSON.stringify(allContacts, null, 2));
+  } catch (error) {
+    console.log("Error writing contacts file: ", error.message);
+  }
+
   return newContact;
 }
 
